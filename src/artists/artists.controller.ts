@@ -6,49 +6,46 @@ import {
   Put,
   Param,
   Delete,
-  ClassSerializerInterceptor,
-  UseInterceptors,
-  HttpException,
-  HttpStatus,
   HttpCode,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ArtistsService } from './artists.service';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 import { IdDto } from '../common/dto/id.dto';
 import { NotFound } from '../common/errors/NotFound';
 import { UpdateFailed } from '../common/errors/UpdateFailed';
 
-@Controller('user')
-@UseInterceptors(ClassSerializerInterceptor)
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller('artist')
+export class ArtistsController {
+  constructor(private readonly artistsService: ArtistsService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() createArtistDto: CreateArtistDto) {
+    return this.artistsService.create(createArtistDto);
   }
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.artistsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param() dto: IdDto) {
     try {
-      return this.usersService.findOne(dto.id);
+      return this.artistsService.findOne(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Put(':id')
-  update(@Param() dto: IdDto, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param() dto: IdDto, @Body() updateArtistDto: UpdateArtistDto) {
     try {
-      return this.usersService.update(dto.id, updateUserDto);
-    } catch (e: unknown) {
+      return this.artistsService.update(dto.id, updateArtistDto);
+    } catch (e) {
       if (e instanceof NotFound) {
         throw new HttpException('Not found', HttpStatus.NOT_FOUND);
       } else if (e instanceof UpdateFailed) {
@@ -61,7 +58,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param() dto: IdDto) {
     try {
-      return this.usersService.remove(dto.id);
+      return this.artistsService.remove(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }

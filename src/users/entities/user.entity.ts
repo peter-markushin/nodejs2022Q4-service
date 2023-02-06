@@ -1,7 +1,7 @@
 import * as crypto from 'node:crypto';
 import { Exclude } from 'class-transformer';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { UpdateFailed } from '../errors/UpdateFailed';
+import { UpdateFailed } from '../../common/errors/UpdateFailed';
 
 export class User {
   id: string; // uuid v4
