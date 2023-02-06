@@ -3,11 +3,13 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { NotFound } from '../common/errors/NotFound';
+import { FavoritesService } from '../favorites/favorites.service';
 
 const tracks = new Map<string, Track>();
 
 @Injectable({ scope: Scope.DEFAULT })
 export class TracksService {
+  constructor(private readonly favoritesService: FavoritesService) {}
   artistRemoved(artistId: string) {
     tracks.forEach((track) => {
       if (track.artistId == artistId) {
@@ -44,6 +46,14 @@ export class TracksService {
     return tracks.get(id);
   }
 
+  findMany(ids: string[]) {
+    return [...tracks.values()].filter((t) => ids.includes(t.id));
+  }
+
+  exists(id: string) {
+    return tracks.has(id);
+  }
+
   update(id: string, updateTrackDto: UpdateTrackDto) {
     if (!tracks.has(id)) {
       throw new NotFound();
@@ -62,5 +72,7 @@ export class TracksService {
     }
 
     tracks.delete(id);
+
+    this.favoritesService.trackRemoved(id);
   }
 }

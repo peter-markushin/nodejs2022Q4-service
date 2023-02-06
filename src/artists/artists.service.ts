@@ -5,53 +5,64 @@ import { Artist } from './entities/artist.entity';
 import { NotFound } from '../common/errors/NotFound';
 import { AlbumsService } from '../albums/albums.service';
 import { TracksService } from '../tracks/tracks.service';
+import { FavoritesService } from '../favorites/favorites.service';
+
+const artists = new Map<string, Artist>();
 
 @Injectable()
 export class ArtistsService {
-  private artists: Record<string, Artist> = {};
-
   constructor(
     private readonly albumService: AlbumsService,
+    private readonly favoritesService: FavoritesService,
     private readonly tracksService: TracksService,
   ) {}
 
   create(createArtistDto: CreateArtistDto) {
     const artist = new Artist(createArtistDto);
 
-    this.artists[artist.id] = artist;
+    artists.set(artist.id, artist);
 
     return artist;
   }
 
   findAll() {
-    return Object.values(this.artists);
+    return [...artists.values()];
   }
 
   findOne(id: string) {
-    if (!this.artists[id]) {
+    if (!artists.has(id)) {
       throw new NotFound();
     }
 
-    return this.artists[id];
+    return artists.get(id);
+  }
+
+  findMany(ids: string[]) {
+    return [...artists.values()].filter((a) => ids.includes(a.id));
+  }
+
+  exists(id: string) {
+    return artists.has(id);
   }
 
   update(id: string, updateArtistDto: UpdateArtistDto) {
-    if (!this.artists[id]) {
+    if (!artists.has(id)) {
       throw new NotFound();
     }
 
-    this.artists[id].update(updateArtistDto);
+    artists.get(id).update(updateArtistDto);
 
-    return this.artists[id];
+    return artists.get(id);
   }
 
   remove(id: string) {
-    if (!this.artists[id]) {
+    if (!artists.has(id)) {
       throw new NotFound();
     }
 
-    delete this.artists[id];
+    artists.delete(id);
 
+    this.favoritesService.artistRemoved(id);
     this.albumService.artistRemoved(id);
     this.tracksService.artistRemoved(id);
   }
