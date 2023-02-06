@@ -3,54 +3,59 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { NotFound } from '../common/errors/NotFound';
+import { TracksService } from '../tracks/tracks.service';
+
+const albums = new Map<string, Album>();
 
 @Injectable()
 export class AlbumsService {
-  private albums: Record<string, Album> = {};
+  constructor(private readonly tracksService: TracksService) {}
 
   artistRemoved(artistId: string) {
-    for (const albumId in this.albums) {
-      if (this.albums[albumId].artistId === artistId) {
-        this.albums[albumId].artistId = null;
+    albums.forEach((album) => {
+      if (album.artistId == artistId) {
+        album.artistId = null;
       }
-    }
+    });
   }
 
   create(createAlbumDto: CreateAlbumDto) {
     const album = new Album(createAlbumDto);
 
-    this.albums[album.id] = album;
+    albums.set(album.id, album);
 
     return album;
   }
 
   findAll() {
-    return Object.values(this.albums);
+    return [...albums.values()];
   }
 
   findOne(id: string) {
-    if (!this.albums[id]) {
+    if (!albums.has(id)) {
       throw new NotFound();
     }
 
-    return this.albums[id];
+    return albums.get(id);
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    if (!this.albums[id]) {
+    if (!albums.has(id)) {
       throw new NotFound();
     }
 
-    this.albums[id].update(updateAlbumDto);
+    albums.get(id).update(updateAlbumDto);
 
-    return this.albums[id];
+    return albums.get(id);
   }
 
   remove(id: string) {
-    if (!this.albums[id]) {
+    if (!albums.has(id)) {
       throw new NotFound();
     }
 
-    delete this.albums[id];
+    albums.delete(id);
+
+    this.tracksService.albumRemoved(id);
   }
 }

@@ -4,12 +4,16 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { NotFound } from '../common/errors/NotFound';
 import { AlbumsService } from '../albums/albums.service';
+import { TracksService } from '../tracks/tracks.service';
 
 @Injectable()
 export class ArtistsService {
   private artists: Record<string, Artist> = {};
 
-  constructor(private readonly albumService: AlbumsService) {}
+  constructor(
+    private readonly albumService: AlbumsService,
+    private readonly tracksService: TracksService,
+  ) {}
 
   create(createArtistDto: CreateArtistDto) {
     const artist = new Artist(createArtistDto);
@@ -49,5 +53,6 @@ export class ArtistsService {
     delete this.artists[id];
 
     this.albumService.artistRemoved(id);
+    this.tracksService.artistRemoved(id);
   }
 }
