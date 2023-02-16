@@ -89,3 +89,13 @@ docker compose exec app npm run lint
 ```
 docker compose exec app npm run format
 ```
+
+## Scanning for vulnerabilities
+
+```shell
+npm run docker-scan
+```
+
+This command builds production image and scans it for vulnerabilities. It is run on **host**, not in docker container.
+
+⚠️ You have to be logged in to dockerhub to scan the image.
