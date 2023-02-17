@@ -10,7 +10,6 @@ networks:
 
 services:
   db:
-    image: peterm1tr/rss-rest-service-db:latest
     build:
       context: docker/db
     restart: on-failure
@@ -27,7 +26,6 @@ services:
       - db-data:/var/lib/postgresql/data
 
   app:
-    image: peterm1tr/rss-rest-service:latest
     depends_on:
       - db
     build:

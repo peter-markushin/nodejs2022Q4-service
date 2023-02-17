@@ -8,18 +8,15 @@ import { ArtistsModule } from './artists/artists.module';
 import { AlbumsModule } from './albums/albums.module';
 import { TracksModule } from './tracks/tracks.module';
 import { FavoritesModule } from './favorites/favorites.module';
-import { User } from "./users/entities/user.entity";
-
-const dbConnectionUrl = `postgresql://${env.DATABASE_USER}:${env.DATABASE_PASSWORD}@${env.DATABASE_HOST}:${env.DATABASE_PORT}/${env.DATABASE_NAME}`;
-
-console.debug(dbConnectionUrl);
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: env.DATABASE_URL,
-      entities: [User],
+      entities: [
+        __dirname + '/**/*.entity{.ts,.js}',
+      ],
       autoLoadEntities: false,
       synchronize: env.NODE_ENV === 'development',
       logging: [

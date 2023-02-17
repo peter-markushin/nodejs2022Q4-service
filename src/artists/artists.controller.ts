@@ -20,29 +20,28 @@ export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createArtistDto: CreateArtistDto) {
+  async create(@Body() createArtistDto: CreateArtistDto) {
     return this.artistsService.create(createArtistDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.artistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() dto: IdDto) {
+  async findOne(@Param() dto: IdDto) {
     try {
-      return this.artistsService.findOne(dto.id);
+      return await this.artistsService.findOne(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Put(':id')
-  update(@Param() dto: IdDto, @Body() updateArtistDto: UpdateArtistDto) {
+  async update(@Param() dto: IdDto, @Body() updateArtistDto: UpdateArtistDto) {
     try {
-      return this.artistsService.update(dto.id, updateArtistDto);
+      return await this.artistsService.update(dto.id, updateArtistDto);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -50,9 +49,9 @@ export class ArtistsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param() dto: IdDto) {
+  async remove(@Param() dto: IdDto) {
     try {
-      return this.artistsService.remove(dto.id);
+      return await this.artistsService.remove(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
