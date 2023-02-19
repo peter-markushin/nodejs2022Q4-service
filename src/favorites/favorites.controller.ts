@@ -16,15 +16,14 @@ export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.favoritesService.findAll();
   }
 
   @Post('track/:id')
-  @HttpCode(HttpStatus.CREATED)
-  addTrack(@Param() dto: IdDto) {
+  async addTrack(@Param() dto: IdDto) {
     try {
-      this.favoritesService.addTrack(dto.id);
+      await this.favoritesService.addTrack(dto.id);
     } catch (e) {
       throw new HttpException(
         'Track does not exist',
@@ -36,19 +35,18 @@ export class FavoritesController {
 
   @Delete('track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteTrack(@Param() dto: IdDto) {
+  async deleteTrack(@Param() dto: IdDto) {
     try {
-      this.favoritesService.deleteTrack(dto.id);
+      await this.favoritesService.deleteTrack(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Post('album/:id')
-  @HttpCode(HttpStatus.CREATED)
-  addAlbum(@Param() dto: IdDto) {
+  async addAlbum(@Param() dto: IdDto) {
     try {
-      this.favoritesService.addAlbum(dto.id);
+      await this.favoritesService.addAlbum(dto.id);
     } catch (e) {
       throw new HttpException(
         'Album does not exist',
@@ -60,19 +58,18 @@ export class FavoritesController {
 
   @Delete('album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteAlbum(@Param() dto: IdDto) {
+  async deleteAlbum(@Param() dto: IdDto) {
     try {
-      this.favoritesService.deleteAlbum(dto.id);
+      await this.favoritesService.deleteAlbum(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Post('artist/:id')
-  @HttpCode(HttpStatus.CREATED)
-  addArtist(@Param() dto: IdDto) {
+  async addArtist(@Param() dto: IdDto) {
     try {
-      this.favoritesService.addArtist(dto.id);
+      await this.favoritesService.addArtist(dto.id);
     } catch (e) {
       throw new HttpException(
         'Artist does not exist',
@@ -84,9 +81,9 @@ export class FavoritesController {
 
   @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteArtist(@Param() dto: IdDto) {
+  async deleteArtist(@Param() dto: IdDto) {
     try {
-      this.favoritesService.deleteArtist(dto.id);
+      await this.favoritesService.deleteArtist(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }

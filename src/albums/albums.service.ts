@@ -4,13 +4,13 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { NotFound } from '../common/errors/NotFound';
-import { In, Repository } from "typeorm";
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     @InjectRepository(Album)
-    private repository: Repository<Album>
+    private repository: Repository<Album>,
   ) {}
 
   async create(createAlbumDto: CreateAlbumDto) {
@@ -32,7 +32,7 @@ export class AlbumsService {
   }
 
   async exists(id: string) {
-    return this.repository.exist({ where: { id }});
+    return this.repository.exist({ where: { id } });
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {

@@ -1,6 +1,12 @@
-import { Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Artist } from "../../artists/entities/artist.entity";
-import { Album } from "../../albums/entities/album.entity";
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Artist } from '../../artists/entities/artist.entity';
+import { Album } from '../../albums/entities/album.entity';
 
 @Entity()
 export class Track {
@@ -10,14 +16,24 @@ export class Track {
   @Column()
   name: string;
 
-  @ManyToOne(type => Artist, { onDelete: "SET NULL", onUpdate: "CASCADE", createForeignKeyConstraints: true, nullable: true })
+  @ManyToOne(() => Artist, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    createForeignKeyConstraints: true,
+    nullable: true,
+  })
   @JoinColumn()
   artist?: Artist; // refers to Artist
 
   @Column({ nullable: true })
   artistId: string;
 
-  @ManyToOne(type => Album, { onDelete: "SET NULL", onUpdate: "CASCADE", createForeignKeyConstraints: true, nullable: true })
+  @ManyToOne(() => Album, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    createForeignKeyConstraints: true,
+    nullable: true,
+  })
   @JoinColumn()
   album?: Album; // refers to Album
 

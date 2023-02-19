@@ -1,10 +1,17 @@
 import { Buffer } from 'node:buffer';
-import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
-import { Exclude, Transform } from "class-transformer";
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'node:crypto';
+import { Exclude, Transform } from 'class-transformer';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateFailed } from '../../common/errors/UpdateFailed';
-import { CreateUserDto } from "../dto/create-user.dto";
+import { CreateUserDto } from '../dto/create-user.dto';
 
 const HASH_ALGO = 'sha512';
 const ITERATIONS = 5432;
@@ -49,7 +56,13 @@ export class User {
     const saltBuffer = randomBytes(SALT_BYTES);
 
     this.salt = saltBuffer.toString('hex');
-    this._password = pbkdf2Sync(password, saltBuffer, ITERATIONS, KEY_LENGTH, HASH_ALGO).toString('hex');
+    this._password = pbkdf2Sync(
+      password,
+      saltBuffer,
+      ITERATIONS,
+      KEY_LENGTH,
+      HASH_ALGO,
+    ).toString('hex');
   }
 
   verifyPassword(password: string): boolean {

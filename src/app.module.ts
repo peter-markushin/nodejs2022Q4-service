@@ -14,14 +14,10 @@ import { FavoritesModule } from './favorites/favorites.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: env.DATABASE_URL,
-      entities: [
-        __dirname + '/**/*.entity{.ts,.js}',
-      ],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: false,
       synchronize: env.NODE_ENV === 'development',
-      logging: [
-        'query', 'error', 'schema', 'warn', 'info', 'log'
-      ],
+      logging: ['query', 'error', 'schema', 'warn', 'info', 'log'],
     }),
 
     UsersModule,

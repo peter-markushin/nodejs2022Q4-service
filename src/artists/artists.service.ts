@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from "typeorm";
+import { In, Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -10,7 +10,7 @@ import { NotFound } from '../common/errors/NotFound';
 export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
-    private repository: Repository<Artist>
+    private repository: Repository<Artist>,
   ) {}
 
   async create(createArtistDto: CreateArtistDto) {

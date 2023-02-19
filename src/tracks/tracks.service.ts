@@ -4,13 +4,13 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { NotFound } from '../common/errors/NotFound';
-import { In, Repository } from "typeorm";
+import { In, Repository } from 'typeorm';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class TracksService {
   constructor(
     @InjectRepository(Track)
-    private readonly repository: Repository<Track>
+    private readonly repository: Repository<Track>,
   ) {}
 
   async create(createTrackDto: CreateTrackDto) {
