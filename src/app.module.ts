@@ -18,6 +18,8 @@ import { FavoritesModule } from './favorites/favorites.module';
       autoLoadEntities: false,
       synchronize: env.NODE_ENV === 'development',
       logging: ['query', 'error', 'schema', 'warn', 'info', 'log'],
+      migrations: [__dirname + '/migrations/*{.ts,.js}'],
+      migrationsRun: env.NODE_ENV !== 'development'
     }),
 
     UsersModule,
