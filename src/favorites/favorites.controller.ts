@@ -6,8 +6,8 @@ import {
   Delete,
   HttpException,
   HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
+  HttpCode, UseInterceptors, ClassSerializerInterceptor
+} from "@nestjs/common";
 import { FavoritesService } from './favorites.service';
 import { IdDto } from '../common/dto/id.dto';
 
@@ -15,6 +15,7 @@ import { IdDto } from '../common/dto/id.dto';
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   async findAll() {
     return this.favoritesService.findAll();
