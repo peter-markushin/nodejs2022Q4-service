@@ -10,7 +10,7 @@ import {
   VersionColumn,
 } from 'typeorm';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { UpdateFailed } from '../../common/errors/UpdateFailed';
+import { UpdateFailed } from '../../../common/errors/UpdateFailed';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 const HASH_ALGO = 'sha512';

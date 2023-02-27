@@ -7,13 +7,17 @@ import * as yaml from 'js-yaml';
 import { join } from 'path';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+import { LogService } from "./common/logger/log.service";
 
 dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn', 'debug'],
+    bufferLogs: true,
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
+
+  app.useLogger(app.get(LogService));
 
   app.useGlobalPipes(
     new ValidationPipe({

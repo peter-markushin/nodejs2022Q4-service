@@ -13,7 +13,7 @@ import {
 import { ArtistsService } from './artists.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { IdDto } from '../common/dto/id.dto';
+import { IdDto } from '../../common/dto/id.dto';
 
 @Controller('artist')
 export class ArtistsController {

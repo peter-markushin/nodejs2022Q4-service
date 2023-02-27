@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateAlbumDto } from './dto/create-album.dto';
+import { UpdateAlbumDto } from './dto/update-album.dto';
+import { Album } from './entities/album.entity';
+import { NotFound } from '../../common/errors/NotFound';
 import { In, Repository } from 'typeorm';
-import { CreateArtistDto } from './dto/create-artist.dto';
-import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from './entities/artist.entity';
-import { NotFound } from '../common/errors/NotFound';
 
 @Injectable()
-export class ArtistsService {
+export class AlbumsService {
   constructor(
-    @InjectRepository(Artist)
-    private repository: Repository<Artist>,
+    @InjectRepository(Album)
+    private repository: Repository<Album>,
   ) {}
 
-  async create(createArtistDto: CreateArtistDto) {
-    const artist = new Artist(createArtistDto);
+  async create(createAlbumDto: CreateAlbumDto) {
+    const album = new Album(createAlbumDto);
 
-    return this.repository.save(artist);
+    return this.repository.save(album);
   }
 
   async findAll() {
@@ -35,18 +35,18 @@ export class ArtistsService {
     return this.repository.exist({ where: { id } });
   }
 
-  async update(id: string, updateArtistDto: UpdateArtistDto) {
-    let artist: Artist;
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    let album: Album;
 
     try {
-      artist = await this.findOne(id);
+      album = await this.repository.findOneByOrFail({ id });
     } catch (e) {
       throw new NotFound();
     }
 
-    artist.update(updateArtistDto);
+    album.update(updateAlbumDto);
 
-    return this.repository.save(artist);
+    return this.repository.save(album);
   }
 
   async remove(id: string) {

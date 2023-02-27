@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { NotFound } from '../common/errors/NotFound';
+import { NotFound } from '../../common/errors/NotFound';
 
 @Injectable()
 export class UsersService {
