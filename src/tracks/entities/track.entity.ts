@@ -1,16 +1,52 @@
-import * as crypto from 'node:crypto';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+} from 'typeorm';
+import { Artist } from '../../artists/entities/artist.entity';
+import { Album } from '../../albums/entities/album.entity';
 
+@Entity()
 export class Track {
+  @PrimaryGeneratedColumn('uuid')
   id: string; // uuid v4
+
+  @Column()
   name: string;
-  artistId: string | null; // refers to Artist
-  albumId: string | null; // refers to Album
+
+  @ManyToOne(() => Artist, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    createForeignKeyConstraints: true,
+    nullable: true,
+  })
+  @JoinColumn()
+  artist?: Artist; // refers to Artist
+
+  @Column({ nullable: true })
+  artistId: string;
+
+  @ManyToOne(() => Album, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    createForeignKeyConstraints: true,
+    nullable: true,
+  })
+  @JoinColumn()
+  album?: Album; // refers to Album
+
+  @Column({ nullable: true })
+  albumId: string;
+
+  @Column()
   duration: number; // integer number
 
-  constructor(dto: Partial<Omit<Track, 'id'>>) {
-    Object.assign(this, dto);
-
-    this.id = crypto.randomUUID();
+  constructor(dto?: Partial<Omit<Track, 'id'>>) {
+    if (dto) {
+      Object.assign(this, dto);
+    }
   }
 
   update(dto: Partial<Omit<Track, 'id'>>) {

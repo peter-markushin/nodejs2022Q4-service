@@ -1,32 +1,84 @@
-import * as crypto from 'node:crypto';
-import { Exclude } from 'class-transformer';
+import { Buffer } from 'node:buffer';
+import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'node:crypto';
+import { Exclude, Transform } from 'class-transformer';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UpdateFailed } from '../../common/errors/UpdateFailed';
+import { CreateUserDto } from '../dto/create-user.dto';
 
+const HASH_ALGO = 'sha512';
+const ITERATIONS = 5432;
+const KEY_LENGTH = 64;
+const SALT_BYTES = 128;
+
+@Entity()
 export class User {
+  @PrimaryGeneratedColumn('uuid')
   id: string; // uuid v4
+
+  @Column()
   login: string;
+
+  @Column({ name: 'password' })
   @Exclude()
-  password: string;
+  _password: string;
+
+  @Column()
+  @Exclude()
+  salt: string;
+
+  @VersionColumn()
   version: number; // integer number, increments on update
-  createdAt: number; // timestamp of creation
-  updatedAt: number; // timestamp of last update
 
-  constructor(dto: Partial<User>) {
-    Object.assign(this, dto);
+  @CreateDateColumn({ type: 'timestamp' })
+  @Transform(({ value }) => value.getTime(), { toPlainOnly: true })
+  private createdAt: Date; // timestamp of creation
 
-    this.id = crypto.randomUUID();
-    this.version = 1;
-    this.createdAt = this.updatedAt = new Date().getTime();
+  @UpdateDateColumn({ type: 'timestamp' })
+  @Transform(({ value }) => value.getTime(), { toPlainOnly: true })
+  private updatedAt: Date; // timestamp of last update
+
+  constructor(dto?: CreateUserDto) {
+    if (dto) {
+      this.login = dto.login;
+      this.password = dto.password;
+    }
+  }
+
+  private set password(password: string) {
+    const saltBuffer = randomBytes(SALT_BYTES);
+
+    this.salt = saltBuffer.toString('hex');
+    this._password = pbkdf2Sync(
+      password,
+      saltBuffer,
+      ITERATIONS,
+      KEY_LENGTH,
+      HASH_ALGO,
+    ).toString('hex');
+  }
+
+  verifyPassword(password: string): boolean {
+    const saltBuffer = Buffer.from(this.salt, 'hex');
+
+    return timingSafeEqual(
+      Buffer.from(this._password, 'hex'),
+      pbkdf2Sync(password, saltBuffer, ITERATIONS, KEY_LENGTH, HASH_ALGO),
+    );
   }
 
   update(dto: UpdateUserDto): void {
-    if (dto.oldPassword !== this.password) {
+    if (!this.verifyPassword(dto.oldPassword)) {
       throw new UpdateFailed('Password mismatch');
     }
 
     this.password = dto.newPassword;
-    this.version += 1;
-    this.updatedAt = new Date().getTime();
   }
 }

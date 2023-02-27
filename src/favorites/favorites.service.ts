@@ -3,14 +3,16 @@ import { AlbumsService } from '../albums/albums.service';
 import { ArtistsService } from '../artists/artists.service';
 import { TracksService } from '../tracks/tracks.service';
 import { NotFound } from '../common/errors/NotFound';
-
-const tracks: string[] = [];
-const albums: string[] = [];
-const artists: string[] = [];
+import { Favorite } from './entities/favorite.entity';
+import { IsNull, Not, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class FavoritesService {
   constructor(
+    @InjectRepository(Favorite)
+    private readonly repository: Repository<Favorite>,
+
     @Inject(forwardRef(() => AlbumsService))
     private readonly albumsService: AlbumsService,
     @Inject(forwardRef(() => ArtistsService))
@@ -19,95 +21,80 @@ export class FavoritesService {
     private readonly tracksService: TracksService,
   ) {}
 
-  albumRemoved(albumId: string) {
-    if (!albums.includes(albumId)) {
-      return;
+  private async getOrCreateDefaultFavorites() {
+    try {
+      return await this.repository.findOneOrFail({
+        where: {
+          id: Not(IsNull()),
+        },
+        relations: {
+          artists: true,
+          albums: true,
+          tracks: true,
+        },
+      });
+    } catch (e) {
+      return Favorite.create();
     }
-
-    delete albums[albums.indexOf(albumId)];
   }
 
-  artistRemoved(artistId: string) {
-    if (!artists.includes(artistId)) {
-      return;
-    }
-
-    delete artists[artists.indexOf(artistId)];
+  async findAll() {
+    return this.getOrCreateDefaultFavorites();
   }
 
-  trackRemoved(trackId: string) {
-    if (!tracks.includes(trackId)) {
-      return;
-    }
+  async addAlbum(id: string) {
+    const album = await this.albumsService.findOne(id);
+    const favorites = await this.getOrCreateDefaultFavorites();
 
-    delete tracks[tracks.indexOf(trackId)];
+    favorites.addAlbum(album);
+    await this.repository.save(favorites);
   }
 
-  findAll() {
-    return {
-      artists: this.artistsService.findMany(artists),
-      albums: this.albumsService.findMany(albums),
-      tracks: this.tracksService.findMany(tracks),
-    };
-  }
+  async deleteAlbum(id: string) {
+    const favorites = await this.getOrCreateDefaultFavorites();
 
-  addAlbum(id: string) {
-    if (!this.albumsService.exists(id)) {
+    if (!favorites.removeAlbum(id)) {
       throw new NotFound();
     }
 
-    if (albums.includes(id)) {
-      return;
-    }
-
-    albums.push(id);
+    await this.repository.save(favorites);
   }
 
-  deleteAlbum(id: string) {
-    if (!albums.includes(id)) {
+  async addArtist(id: string) {
+    const artist = await this.artistsService.findOne(id);
+    const favorites = await this.getOrCreateDefaultFavorites();
+
+    favorites.addArtist(artist);
+
+    await this.repository.save(favorites);
+  }
+
+  async deleteArtist(id: string) {
+    const favorites = await this.getOrCreateDefaultFavorites();
+
+    if (!favorites.removeArtist(id)) {
       throw new NotFound();
     }
 
-    delete albums[albums.indexOf(id)];
+    await this.repository.save(favorites);
   }
 
-  addArtist(id: string) {
-    if (!this.artistsService.exists(id)) {
+  async addTrack(id: string) {
+    const track = await this.tracksService.findOne(id);
+    const favorites = await this.getOrCreateDefaultFavorites();
+
+    favorites.addTrack(track);
+
+    await this.repository.save(favorites);
+  }
+
+  async deleteTrack(id: string) {
+    const favorites = await this.getOrCreateDefaultFavorites();
+
+    if (!favorites.removeTrack(id)) {
       throw new NotFound();
     }
 
-    if (artists.includes(id)) {
-      return;
-    }
-
-    artists.push(id);
-  }
-
-  deleteArtist(id: string) {
-    if (!artists.includes(id)) {
-      throw new NotFound();
-    }
-
-    delete artists[artists.indexOf(id)];
-  }
-
-  addTrack(id: string) {
-    if (!this.tracksService.exists(id)) {
-      throw new NotFound();
-    }
-
-    if (tracks.includes(id)) {
-      return;
-    }
-
-    tracks.push(id);
-  }
-
-  deleteTrack(id: string) {
-    if (!tracks.includes(id)) {
-      throw new NotFound();
-    }
-
-    delete tracks[tracks.indexOf(id)];
+    await this.repository.save(favorites);
   }
 }

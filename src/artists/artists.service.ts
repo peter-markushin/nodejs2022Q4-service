@@ -1,69 +1,59 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { NotFound } from '../common/errors/NotFound';
-import { AlbumsService } from '../albums/albums.service';
-import { TracksService } from '../tracks/tracks.service';
-import { FavoritesService } from '../favorites/favorites.service';
-
-const artists = new Map<string, Artist>();
 
 @Injectable()
 export class ArtistsService {
   constructor(
-    private readonly albumService: AlbumsService,
-    private readonly favoritesService: FavoritesService,
-    private readonly tracksService: TracksService,
+    @InjectRepository(Artist)
+    private repository: Repository<Artist>,
   ) {}
 
-  create(createArtistDto: CreateArtistDto) {
+  async create(createArtistDto: CreateArtistDto) {
     const artist = new Artist(createArtistDto);
 
-    artists.set(artist.id, artist);
-
-    return artist;
+    return this.repository.save(artist);
   }
 
-  findAll() {
-    return [...artists.values()];
+  async findAll() {
+    return this.repository.find();
   }
 
-  findOne(id: string) {
-    if (!artists.has(id)) {
+  async findOne(id: string) {
+    return this.repository.findOneByOrFail({ id });
+  }
+
+  async findMany(ids: string[]) {
+    return this.repository.findBy({ id: In(ids) });
+  }
+
+  async exists(id: string) {
+    return this.repository.exist({ where: { id } });
+  }
+
+  async update(id: string, updateArtistDto: UpdateArtistDto) {
+    let artist: Artist;
+
+    try {
+      artist = await this.findOne(id);
+    } catch (e) {
       throw new NotFound();
     }
 
-    return artists.get(id);
+    artist.update(updateArtistDto);
+
+    return this.repository.save(artist);
   }
 
-  findMany(ids: string[]) {
-    return [...artists.values()].filter((a) => ids.includes(a.id));
-  }
+  async remove(id: string) {
+    const result = await this.repository.delete(id);
 
-  exists(id: string) {
-    return artists.has(id);
-  }
-
-  update(id: string, updateArtistDto: UpdateArtistDto) {
-    if (!artists.has(id)) {
+    if (result.affected < 1) {
       throw new NotFound();
     }
-
-    artists.get(id).update(updateArtistDto);
-
-    return artists.get(id);
-  }
-
-  remove(id: string) {
-    if (!artists.has(id)) {
-      throw new NotFound();
-    }
-
-    artists.delete(id);
-
-    this.favoritesService.artistRemoved(id);
-    this.albumService.artistRemoved(id);
-    this.tracksService.artistRemoved(id);
   }
 }

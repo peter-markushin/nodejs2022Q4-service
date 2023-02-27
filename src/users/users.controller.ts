@@ -26,42 +26,44 @@ export class UsersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.create(createUserDto);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() dto: IdDto) {
+  async findOne(@Param() dto: IdDto) {
     try {
-      return this.usersService.findOne(dto.id);
+      return await this.usersService.findOne(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Put(':id')
-  update(@Param() dto: IdDto, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param() dto: IdDto, @Body() updateUserDto: UpdateUserDto) {
     try {
-      return this.usersService.update(dto.id, updateUserDto);
+      return await this.usersService.update(dto.id, updateUserDto);
     } catch (e: unknown) {
       if (e instanceof NotFound) {
         throw new HttpException('Not found', HttpStatus.NOT_FOUND);
       } else if (e instanceof UpdateFailed) {
         throw new HttpException('Bad request', HttpStatus.FORBIDDEN);
       }
+
+      throw e;
     }
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param() dto: IdDto) {
+  async remove(@Param() dto: IdDto) {
     try {
-      return this.usersService.remove(dto.id);
+      return await this.usersService.remove(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }

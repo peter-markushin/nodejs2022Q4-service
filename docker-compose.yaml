@@ -1,0 +1,60 @@
+version: '3.5'
+
+volumes:
+  db-data:
+  app-node-modules:
+  app-npm-cache:
+
+networks:
+  db:
+
+services:
+  db:
+    build:
+      context: docker/db
+    restart: on-failure
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      target: dev
+    restart: on-failure
+    environment:
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: ${NODE_ENV}
+    ports:
+      - "127.0.0.1:${PORT}:${PORT}"
+    networks:
+      - db
+    volumes:
+      - ./:/usr/src/app
+      - app-npm-cache:/root/.npm
+      - app-node-modules:/usr/src/app/node_modules
+    depends_on:
+      - db
+
+#  app_prod:
+#    image: peterm1tr/rss-rest-service:latest
+#    restart: on-failure
+#    environment:
+#      PORT: ${PORT}
+#      DATABASE_URL: ${DATABASE_URL}
+#      NODE_ENV: ${NODE_ENV}
+#    ports:
+#      - "127.0.0.1:${PORT}:${PORT}"
+#    networks:
+#      - db
+#    depends_on:
+#      - db

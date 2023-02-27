@@ -20,29 +20,28 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createAlbumDto: CreateAlbumDto) {
+  async create(@Body() createAlbumDto: CreateAlbumDto) {
     return this.albumsService.create(createAlbumDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.albumsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param() dto: IdDto) {
+  async findOne(@Param() dto: IdDto) {
     try {
-      return this.albumsService.findOne(dto.id);
+      return await this.albumsService.findOne(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   @Put(':id')
-  update(@Param() dto: IdDto, @Body() updateAlbumDto: UpdateAlbumDto) {
+  async update(@Param() dto: IdDto, @Body() updateAlbumDto: UpdateAlbumDto) {
     try {
-      return this.albumsService.update(dto.id, updateAlbumDto);
+      return await this.albumsService.update(dto.id, updateAlbumDto);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
@@ -50,9 +49,9 @@ export class AlbumsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param() dto: IdDto) {
+  async remove(@Param() dto: IdDto) {
     try {
-      return this.albumsService.remove(dto.id);
+      return await this.albumsService.remove(dto.id);
     } catch (e) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
