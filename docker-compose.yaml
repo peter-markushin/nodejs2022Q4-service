@@ -34,6 +34,9 @@ services:
       PORT: ${PORT}
       DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: ${NODE_ENV}
+      LOG_LEVEL: ${LOG_LEVEL}
+      LOG_DIR: ${LOG_DIR}
+      LOG_FILE_SIZE: ${LOG_FILE_SIZE}
     ports:
       - "127.0.0.1:${PORT}:${PORT}"
     networks:

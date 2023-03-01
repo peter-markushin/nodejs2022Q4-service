@@ -9,52 +9,52 @@ export class LogService implements LoggerService
   constructor(private readonly logChannels: LogChannel[]) {}
 
   private async writeMessage(message: any, params: any[], level: LogLevel) {
-    const logMessage = `[${Date.now()}] ${message} ${JSON.stringify(params)}`;
+    const logMessage = `[${Date.now()}] ${message} ${JSON.stringify(params)}\n`;
 
-    await Promise.all(this.logChannels.map((c) => c.write(logMessage, level)));
+    return Promise.all(this.logChannels.map((c) => c.write(logMessage, level)));
   }
 
   setLogLevels(levels: LogLevel[]): any {
     this.logLevels = levels;
   }
 
-  async debug(message: any, ...optionalParams: any[]): any {
+  async debug(message: any, ...optionalParams: any[]): Promise<any> {
     if (!this.logLevels.includes('debug')) {
       return;
     }
 
-    await this.writeMessage(message, optionalParams, 'debug');
+    return this.writeMessage(message, optionalParams, 'debug');
   }
 
-  async error(message: any, ...optionalParams: any[]): any {
+  async error(message: any, ...optionalParams: any[]): Promise<any> {
     if (!this.logLevels.includes('error')) {
       return;
     }
 
-    await this.writeMessage(message, optionalParams, 'error');
+    return this.writeMessage(message, optionalParams, 'error');
   }
 
-  async log(message: any, ...optionalParams: any[]): any {
+  async log(message: any, ...optionalParams: any[]): Promise<any> {
     if (!this.logLevels.includes('log')) {
       return;
     }
 
-    await this.writeMessage(message, optionalParams, 'log');
+    return this.writeMessage(message, optionalParams, 'log');
   }
 
-  async verbose(message: any, ...optionalParams: any[]): any {
+  async verbose(message: any, ...optionalParams: any[]): Promise<any> {
     if (!this.logLevels.includes('verbose')) {
       return;
     }
 
-    await this.writeMessage(message, optionalParams, 'verbose');
+    return this.writeMessage(message, optionalParams, 'verbose');
   }
 
-  async warn(message: any, ...optionalParams: any[]): any {
+  async warn(message: any, ...optionalParams: any[]): Promise<any> {
     if (!this.logLevels.includes('warn')) {
       return;
     }
 
-    await this.writeMessage(message, optionalParams, 'warn');
+    return this.writeMessage(message, optionalParams, 'warn');
   }
 }

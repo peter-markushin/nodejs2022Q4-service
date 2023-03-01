@@ -1,4 +1,4 @@
-import { stat, rename, unlink } from 'node:fs/promises';
+import { statSync, renameSync, unlinkSync } from 'node:fs';
 
 const MAX_FILES = 5;
 
@@ -9,12 +9,18 @@ export class LogRotateService {
     this.maxSizeBytes = this.parseSize(maxSize);
   }
 
-  async rotate(path: string): Promise<string> {
+  rotate(path: string): string {
     if (this.maxSizeBytes === 0) {
       return path;
     }
 
-    const fileStat = await stat(path);
+    let fileStat;
+
+    try {
+      fileStat = statSync(path);
+    } catch (e) {
+      return path;
+    }
 
     if (fileStat.size < this.maxSizeBytes) {
       return path;
@@ -38,24 +44,24 @@ export class LogRotateService {
     }
   }
 
-  private async renameFiles(path: string): Promise<string> {
+  private renameFiles(path: string): string {
     for (let i = MAX_FILES; i > 0; i--) {
       try {
-        await stat(`${path}.${i}`);
+        statSync(`${path}.${i}`);
       } catch (e) {
         continue;
       }
 
       if (i === MAX_FILES) {
-        await unlink(`${path}.${i}`);
+        unlinkSync(`${path}.${i}`);
 
         continue;
       }
 
-      await rename(`${path}.${i}`, `${path}.${i + 1}`);
+      renameSync(`${path}.${i}`, `${path}.${i + 1}`);
     }
 
-    await rename(path, `${path}.1`);
+    renameSync(path, `${path}.1`);
 
     return path;
   }

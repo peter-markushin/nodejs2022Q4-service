@@ -1,5 +1,5 @@
 import { env } from 'node:process';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,8 +9,7 @@ import { AlbumsModule } from './models/albums/albums.module';
 import { TracksModule } from './models/tracks/tracks.module';
 import { FavoritesModule } from './models/favorites/favorites.module';
 import { LogModule } from "./common/logger/log.module";
-import { StdoutChannel } from "./common/logger/channel/stdout.channel";
-import { FileChannel } from "./common/logger/channel/file.channel";
+import { LoggerMiddleware } from "./common/logger/log.middleware";
 
 @Module({
   imports: [
@@ -24,12 +23,8 @@ import { FileChannel } from "./common/logger/channel/file.channel";
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       migrationsRun: env.NODE_ENV !== 'development'
     }),
-    LogModule.register({ channels:
-      [
-        new StdoutChannel(), // log everything
-        new FileChannel(env.LOG_PATH, ['error']), // log errors only
-        new FileChannel(env.LOG_PATH), // log everything
-      ],
+    LogModule.register({
+      logPath: env.LOG_DIR,
       maxLogSize: env.LOG_FILE_SIZE
     }),
     UsersModule,
@@ -41,4 +36,8 @@ import { FileChannel } from "./common/logger/channel/file.channel";
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer): any {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
