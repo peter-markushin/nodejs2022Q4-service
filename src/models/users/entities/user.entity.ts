@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer';
+import { env } from 'node:process';
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from 'node:crypto';
 import { Exclude, Transform } from 'class-transformer';
 import {
@@ -14,7 +15,7 @@ import { UpdateFailed } from '../../../common/errors/UpdateFailed';
 import { CreateUserDto } from '../dto/create-user.dto';
 
 const HASH_ALGO = 'sha512';
-const ITERATIONS = 5432;
+const ITERATIONS = parseInt(env.CRYPT_SALT, 10) || 5432;
 const KEY_LENGTH = 64;
 const SALT_BYTES = 128;
 
@@ -33,6 +34,10 @@ export class User {
   @Column()
   @Exclude()
   salt: string;
+
+  @Column({ length: 300, nullable: true })
+  @Exclude()
+  refreshToken: string;
 
   @VersionColumn()
   version: number; // integer number, increments on update

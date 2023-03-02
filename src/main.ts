@@ -11,6 +11,7 @@ import { LogService } from "./common/logger/log.service";
 import { ExceptionFilter } from "./common/logger/exception-filter";
 import { LoggingInterceptor } from "./common/logger/log.interceptor";
 import { env } from "node:process";
+import { JwtGuard } from "./auth/guard/jwt.guard";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ExceptionFilter(httpAdapterHost, logService));
   app.useGlobalInterceptors(new LoggingInterceptor(logService));
+  app.useGlobalGuards(new JwtGuard());
 
   process.on('uncaughtException', (error, origin) => {
     logService.error(`Uncaught process exception "${error.message}" at ${origin}`);

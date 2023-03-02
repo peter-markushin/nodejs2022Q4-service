@@ -10,6 +10,7 @@ import { TracksModule } from './models/tracks/tracks.module';
 import { FavoritesModule } from './models/favorites/favorites.module';
 import { LogModule } from "./common/logger/log.module";
 import { LoggerMiddleware } from "./common/logger/log.middleware";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { LoggerMiddleware } from "./common/logger/log.middleware";
       url: env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: false,
-      synchronize: env.NODE_ENV === 'development',
+      synchronize: false, //env.NODE_ENV === 'development',
       logging: ['query', 'error', 'schema', 'warn', 'info', 'log'],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       migrationsRun: env.NODE_ENV !== 'development'
@@ -32,6 +33,7 @@ import { LoggerMiddleware } from "./common/logger/log.middleware";
     AlbumsModule,
     TracksModule,
     FavoritesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
