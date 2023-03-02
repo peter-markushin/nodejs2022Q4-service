@@ -1,19 +1,21 @@
 import { env } from 'node:process';
 import { Injectable } from '@nestjs/common';
-import { User } from "../models/users/entities/user.entity";
-import { UsersService } from "../models/users/users.service";
-import { JwtPayload } from "jsonwebtoken";
-import { JwtService } from "@nestjs/jwt";
+import { User } from '../models/users/entities/user.entity';
+import { UsersService } from '../models/users/users.service';
+import { JwtPayload } from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UsersService
-  ) {
-  }
+    private readonly userService: UsersService,
+  ) {}
 
-  async getUserWithPasswordCheck(login: string, password: string): Promise<User|null> {
+  async getUserWithPasswordCheck(
+    login: string,
+    password: string,
+  ): Promise<User | null> {
     let user: User;
 
     try {
@@ -41,7 +43,6 @@ export class AuthService {
     const payload = {
       login: login,
       userId: userId,
-      sub: userId,
     };
 
     return {
@@ -57,7 +58,7 @@ export class AuthService {
   }
 
   async refreshTokens(payload: JwtPayload) {
-    const tokens = this.generateTokens(payload.login, payload.userId);
+    const tokens = this.generateTokens(payload.userId, payload.login);
 
     await this.userService.updateRefreshToken(
       payload.userId,

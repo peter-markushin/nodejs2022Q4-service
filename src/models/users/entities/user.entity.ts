@@ -24,7 +24,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string; // uuid v4
 
-  @Column()
+  @Column({ unique: true })
   login: string;
 
   @Column({ name: 'password' })

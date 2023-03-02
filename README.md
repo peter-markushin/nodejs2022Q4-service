@@ -65,6 +65,12 @@ Therefore, if you've run the app in development mode you'll have to destroy db d
 - Uncomment `services.app_prod` in `docker-compose.yaml`
 - Stop containers and destroy volumes and start again: `docker compose down -v && docker compose up`
 
+#### Apply migrations manually if necessary
+
+```shell
+docker compose exec app npm run typeorm migration:run -- -d src/dataSource.ts
+```
+
 ## Testing (requires development mode)
 
 After application running open new terminal and enter:
