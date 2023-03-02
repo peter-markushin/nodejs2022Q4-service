@@ -35,12 +35,16 @@ export class LogRotateService {
 
     switch (multiplier.toLowerCase()) {
       case 'kib':
-      case 'kb': return number * 1024;
+      case 'kb':
+        return number * 1024;
       case 'mib':
-      case 'mb': return number * 1024 * 1024;
+      case 'mb':
+        return number * 1024 * 1024;
       case 'gib':
-      case 'gb': return number * 1024 * 1024 * 1024;
-      default: return 0;
+      case 'gb':
+        return number * 1024 * 1024 * 1024;
+      default:
+        return 0;
     }
   }
 

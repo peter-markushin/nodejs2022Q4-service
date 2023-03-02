@@ -1,5 +1,5 @@
 import { env } from 'node:process';
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,8 +8,8 @@ import { ArtistsModule } from './models/artists/artists.module';
 import { AlbumsModule } from './models/albums/albums.module';
 import { TracksModule } from './models/tracks/tracks.module';
 import { FavoritesModule } from './models/favorites/favorites.module';
-import { LogModule } from "./common/logger/log.module";
-import { LoggerMiddleware } from "./common/logger/log.middleware";
+import { LogModule } from './common/logger/log.module';
+import { LoggerMiddleware } from './common/logger/log.middleware';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -22,11 +22,11 @@ import { AuthModule } from './auth/auth.module';
       synchronize: false, //env.NODE_ENV === 'development',
       logging: ['query', 'error', 'schema', 'warn', 'info', 'log'],
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
-      migrationsRun: env.NODE_ENV !== 'development'
+      migrationsRun: env.NODE_ENV !== 'development',
     }),
     LogModule.register({
       logPath: env.LOG_DIR,
-      maxLogSize: env.LOG_FILE_SIZE
+      maxLogSize: env.LOG_FILE_SIZE,
     }),
     UsersModule,
     ArtistsModule,
@@ -38,7 +38,7 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

@@ -1,9 +1,8 @@
-import { Injectable, LoggerService, LogLevel } from "@nestjs/common";
-import { LogChannel } from "./log.channel";
+import { Injectable, LoggerService, LogLevel } from '@nestjs/common';
+import { LogChannel } from './log.channel';
 
 @Injectable()
-export class LogService implements LoggerService
-{
+export class LogService implements LoggerService {
   private logLevels: LogLevel[];
 
   constructor(private readonly logChannels: LogChannel[]) {}

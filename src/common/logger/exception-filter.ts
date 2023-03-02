@@ -4,17 +4,16 @@ import {
   ExceptionFilter as ExceptionFilterInterface,
   HttpException,
   HttpStatus,
-  LoggerService
-} from "@nestjs/common";
-import { HttpAdapterHost } from "@nestjs/core";
+  LoggerService,
+} from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
 
 @Catch()
 export class ExceptionFilter implements ExceptionFilterInterface {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
-    private readonly logger: LoggerService
-  ) {
-  }
+    private readonly logger: LoggerService,
+  ) {}
 
   catch(exception: any, host: ArgumentsHost): void {
     const context = host.switchToHttp();
@@ -32,25 +31,18 @@ export class ExceptionFilter implements ExceptionFilterInterface {
       logMessage = 'Exception';
       response = {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Internal Server Error'
+        message: 'Internal Server Error',
       };
       status = HttpStatus.INTERNAL_SERVER_ERROR;
 
       this.logger.error(`Uncaught exception ${exception.message}`);
     }
 
-    this.logger.log(
-      `${logMessage}:`,
-      {
-        status: status,
-        response: response
-      }
-    );
+    this.logger.log(`${logMessage}:`, {
+      status: status,
+      response: response,
+    });
 
-    httpAdapter.reply(
-      context.getResponse(),
-      response,
-      status
-    );
+    httpAdapter.reply(context.getResponse(), response, status);
   }
 }
