@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { NotFound } from '../common/errors/NotFound';
+import { NotFound } from '../../common/errors/NotFound';
 import { In, Repository } from 'typeorm';
 
 @Injectable({ scope: Scope.DEFAULT })

@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { NotFound } from '../common/errors/NotFound';
+import { NotFound } from '../../common/errors/NotFound';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +27,10 @@ export class UsersService {
     return this.usersRepository.findOneByOrFail({ id });
   }
 
+  async findOneByLogin(login: string): Promise<User> {
+    return this.usersRepository.findOneByOrFail({ login: login });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     let user: User;
 
@@ -37,6 +41,14 @@ export class UsersService {
     }
 
     user.update(updateUserDto);
+
+    return this.usersRepository.save(user);
+  }
+
+  async updateRefreshToken(userId: string, newToken: string): Promise<User> {
+    const user = await this.findOne(userId);
+
+    user.refreshToken = newToken;
 
     return this.usersRepository.save(user);
   }

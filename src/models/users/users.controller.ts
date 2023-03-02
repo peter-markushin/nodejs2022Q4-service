@@ -15,9 +15,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IdDto } from '../common/dto/id.dto';
-import { NotFound } from '../common/errors/NotFound';
-import { UpdateFailed } from '../common/errors/UpdateFailed';
+import { IdDto } from '../../common/dto/id.dto';
+import { NotFound } from '../../common/errors/NotFound';
+import { UpdateFailed } from '../../common/errors/UpdateFailed';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
